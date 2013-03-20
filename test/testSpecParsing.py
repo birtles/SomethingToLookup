@@ -1,10 +1,16 @@
 # vim: set fileencoding=utf-8 :
 
 import sys
-sys.path.append('..')
+sys.path.append('../..')
+
+import unittest
+
+# Add the Anki source to the system path so that references to e.g. anki.utils
+# etc. work
+import os
+sys.path.append(os.environ['ANKI_SRC'])
 
 from SomethingToLookup import SpecParser
-import unittest;
 
 class SpecParserTestCase(unittest.TestCase):
   def setUp(self):
