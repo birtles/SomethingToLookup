@@ -1,3 +1,4 @@
+from anki.utils import stripHTML
 from anki.hooks import addHook
 from anki.template.template import get_or_attr
 import re
@@ -9,7 +10,7 @@ class KeyedException(Exception):
   def __str__(self):
     return "%s: %s" & (repr(self.value), repr(self.detail))
 
-def render(tag, context):
+def lookup(tag, context):
   # Parse the tag
   parser = SpecParser()
   result = parser.parseTag(tag)
@@ -20,13 +21,16 @@ def render(tag, context):
   key = get_or_attr(context, result['field'], None)
   if key is None:
     raise KeyedException('field-not-found', result['field'])
+
+  # Sanitize field contents
+  key = stripHTML(key).strip()
   if not len(key):
     raise KeyedException('field-empty', result['field'])
   return key
 
-def lookup(txt, extra, context, tag, tag_name):
+def render(txt, extra, context, tag, tag_name):
   try:
-    result = render(tag_name, context)
+    result = lookup(tag_name, context)
   except KeyedException as e:
     if e.key == 'failed-parse':
       # XXX In future just make this the empty string
@@ -35,12 +39,13 @@ def lookup(txt, extra, context, tag, tag_name):
     elif e.key == 'field-not-found':
       result = "'%s' not found" % e.detail
     elif e.key == 'field-empty':
+      # XXX This should probably fail silently too
       result = "'%s' is empty" % e.detail
     else:
       result = "Unknown error: %s" % e
   return result
 
-addHook('fmod_lookup', lookup)
+addHook('fmod_lookup', render)
 
 class SpecParser:
   """Parser for deck import specs.
