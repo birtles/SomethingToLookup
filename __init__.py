@@ -1,4 +1,16 @@
+from anki.hooks import addHook
 import re
+
+def lookup(txt, extra, context, tag, tag_name):
+  parser = SpecParser()
+  result = parser.parseTag(tag_name)
+  if result is None:
+    return "Failed to parse lookup"
+  else:
+    return "Looking up %s template on %s deck" % \
+        (result['template'], result['deck'])
+
+addHook('fmod_lookup', lookup)
 
 class SpecParser:
   """Parser for deck import specs.
