@@ -29,10 +29,6 @@ class SpecParser:
     tag = r"%(open)s(?:\{)?\s*(lookup:.+?)\1?%(close)s+"
     self.tag_re = re.compile(tag % tag_delims, re.DOTALL)
 
-    # XXX The following is totally wrong---need all sorts of tests too
-    # deck_tree = r"(\S.*?(?<!\\)(?:\\\\)*)::)*(.*?(?<!\\)(?:\\\\)[^:])" \
-    # self.deck_re = re.compile(deck % tags)
-
   def parseTag(self, tag):
     """Parse a tag name and return a parsed lookup specification
     
